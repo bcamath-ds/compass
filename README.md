@@ -24,7 +24,7 @@ sudo apt-get install m4
   Compass uses the GSL library for sampling distribution.
 
 ```sh
-sudo apt-get install libgsl0-dev libatlas-base-dev ibbfd-dev libiberty-dev
+sudo apt-get install libgsl0-dev libatlas-base-dev libbfd-dev libiberty-dev libtool
 ```
 
 ### Availability
