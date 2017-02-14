@@ -279,18 +279,17 @@ static void print_help(const char *my_name)
   xprintf("  --op-pinit p         Proportion of selected nodes at initialization\n");
   xprintf("  --op-pgreedy p       Greediness parameter\n");
   xprintf("\n");
-  xprintf("  (OP) Genetic Algorithm options:\n");
-  xprintf("  --ea                 Use EA approach\n");
-  //xprintf("   --beta b        Beta parameter\n");
-  xprintf("  --ga-itlim n         Number of iterations\n");
-  xprintf("  --ga-improve1 d      1 if on. 0 else.\n");
-  xprintf("  --ga-improve2 d      1 if On. 0 else.\n");
-  xprintf("  --ga-d2d it          Number of iterations between add/drop phase"
+  xprintf("  (OP) Evolutionary Algorithm options:\n");
+  xprintf("  --ea                 Use Evolutionary Algorithm (default)\n");
+  xprintf("  --ea-itlim n         Number of iterations\n");
+  xprintf("  --ea-improve1 d      1 if on. 0 else.\n");
+  xprintf("  --ea-improve2 d      1 if On. 0 else.\n");
+  xprintf("  --ea-d2d it          Number of iterations between add/drop phase"
       "s\n");
   xprintf("  --pop-size p         Population size\n");
   xprintf("  --stop-pop p         Population based stopping criteria (perc)\n");
-  xprintf("  --ga-pmut p          Use mutation p probability\n");
-  xprintf("  --ga-nparsel n       Number of parents preselected\n");
+  xprintf("  --ea-pmut p          Use mutation p probability\n");
+  xprintf("  --ea-nparsel n       Number of parents preselected\n");
   //xprintf("   --exact           use simplex method based on exact arithmetic\n");
   xprintf("\n");
 #if 0
@@ -822,10 +821,10 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       csa->opcp->nruns = nruns;
     }
     /*------------------------------------------------------------------------*/
-    /* Genetic Algorithm parameters */
-    else if (p("--op-ga"))
+    /* Evolutionary Algorithm parameters */
+    else if (p("--op-ea"))
       csa->opcp->heur_tech = OP_HEUR_EA;
-    else if (p("--ga-itlim"))
+    else if (p("--ea-itlim"))
     { int it_lim;
       k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
@@ -838,7 +837,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       }
       csa->opcp->eacp->it_lim = it_lim;
     }
-    else if (p("--ga-nparsel"))
+    else if (p("--ea-nparsel"))
     { int nparsel;
       k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
@@ -851,7 +850,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       }
       csa->opcp->eacp->nparsel = nparsel;
     }
-    else if (p("--ga-pmut"))
+    else if (p("--ea-pmut"))
     { double pmut;
       k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
@@ -864,7 +863,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       }
       csa->opcp->eacp->pmut = pmut;
     }
-    else if (p("--ga-improve1"))
+    else if (p("--ea-improve1"))
     { int status;
       k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
@@ -877,7 +876,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       }
       csa->opcp->eacp->len_improve1 = status;
     }
-    else if (p("--ga-improve2"))
+    else if (p("--ea-improve2"))
     { int status;
       k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
@@ -890,7 +889,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       }
       csa->opcp->eacp->len_improve2 = status;
     }
-    else if (p("--ga-d2d"))
+    else if (p("--ea-d2d"))
     { int d2d;
       k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
