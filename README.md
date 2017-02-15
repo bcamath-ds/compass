@@ -6,25 +6,24 @@ Overview
 
 Compass is a solver for the Orienteering Problem written in C.
 
-It includes some routines originally released in the Concorde solver: 2-opt, 2.5-opt, 3-opt and Lin-Kernighan for TSP, dynamic k-d trees and the functions to calculate the edge length. Note that this routines were released under an Academic Licence.
+It includes some routines originally released in the Concorde solver. Note that these routines were released under an Academic Licence.
 
 Compass is distributed under the GNU General Public License.
-
 
 Instructions to Build from Source
 ---------------------------------
 
 ### Installing dependencies
 
-  Compass uses autotools
+Compass uses GNU Autotools
 ```sh
-sudo apt-get install m4
+sudo apt-get install libtool m4
 ```
 
-  Compass uses the GSL library for sampling distribution.
+Compass uses GSL library for sampling distributions.
 
 ```sh
-sudo apt-get install libgsl0-dev libatlas-base-dev libbfd-dev libiberty-dev libtool
+sudo apt-get install libgsl0-dev libatlas-base-dev libbfd-dev libiberty-dev
 ```
 
 ### Availability
@@ -37,7 +36,7 @@ git clone https://github.com/bcamath-ds/compass
 
 ### Building Compass
 
-If the configure script is absent you can generate using the GNU Autotools:
+If the *configure* script is absent you can generate it using GNU Autotools:
 
 ```bash
 autoheader
@@ -47,12 +46,32 @@ automake --add-missing
 autoconf
 ```
 
-To build the compass binary type:
+To build the binary type:
 ```bash
 ./configure
 make
 ```
- Additional build instructions are in the INSTALL file.
+Additional build instructions are in the INSTALL file.
+
+## How to use it
+
+To solve an OP instance
+```
+./compass --op <instance_file>
+```
+
+The benchmark instances for the OP can be found in the OPLib repository:
+
+```
+git clone https://github.com/bcamath-ds/OPLib
+./compass --op OPLib/gen3/eil101-gen3-50.oplib
+```
+
+To see additional parameters and options:
+
+```
+./compass -h
+```
 
 Directory Layout
 ----------------
@@ -94,7 +113,6 @@ ROOT                          Root directory
      ├── env                  Envirment utilities: alloc, time, errors...
      │   └── ...
      ├── Makefile.am
-     ├── Makefile.in
      │
      ├── op                   **Orienteering Problem**
      │   ├── ea               Evolutionary Algorithm
