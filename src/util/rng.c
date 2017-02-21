@@ -1,11 +1,5 @@
-/* rng.c (pseudo-random number generator) */
-
 /***********************************************************************
 *  This code is part of Compass.
-*
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
 *
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
@@ -193,7 +187,7 @@ void rng_delete_rand(RNG *rand)
 
 /**********************************************************************/
 
-#ifdef GLP_TEST
+#ifdef COMPASS_TEST
 /* To be sure that this modified version produces the same results as
  * the original version, run this validation program. */
 

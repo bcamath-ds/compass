@@ -1,11 +1,5 @@
-/* error.c (error handling) */
-
 /***********************************************************************
 *  This code is part of Compass.
-*
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
 *
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by

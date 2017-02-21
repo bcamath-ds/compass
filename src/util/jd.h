@@ -1,11 +1,5 @@
-/* jd.h (conversions between calendar date and Julian day number) */
-
 /***********************************************************************
 *  This code is part of Compass.
-*
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
 *
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
@@ -22,11 +16,11 @@
 ***********************************************************************/
 
 
-#define jday _glp_jday
+#define jday _compass_jday
 int jday(int d, int m, int y);
 /* convert calendar date to Julian day number */
 
-#define jdate _glp_jdate
+#define jdate _compass_jdate
 int jdate(int j, int *d, int *m, int *y);
 /* convert Julian day number to calendar date */
 

@@ -1,10 +1,6 @@
 /***********************************************************************
 *  This code is part of Compass.
 *
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
-*
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
 *  the Free Software Foundation, either version 3 of the License, or
@@ -63,7 +59,7 @@ int compass_op_start_population ( compass_prob *prob, op_population *pop,
 /*****************************************************************************/
 { int ret = 0;
   int i;
-  xprintf ("op   :   Population size: %d\n", pop->size);
+  xprintf ("op   : > Population size: %d\n", pop->size);
   for (i = 0; i < pop->size; i++)
   { op_solution *sol = &pop->solution[i];
     compass_op_erase_sol(prob, sol);

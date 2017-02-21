@@ -1,10 +1,6 @@
 /***********************************************************************
 *  This code is part of Compass.
 *
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
-*
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
 *  the Free Software Foundation, either version 3 of the License, or
@@ -107,8 +103,8 @@ int main_op (struct csa *csa, int ac, char **av)
   if (opcp->msg_lev >= COMPASS_MSG_ON)
   { if (op->sol_stat == COMPASS_OPT || op->sol_stat == COMPASS_FEAS )
     { xprintf ("\n");
-      xprintf ("op    : Best solution value: %.0f\n", op->sol->val);
-      xprintf ("op    : Visited: %d\n", op->sol->ns);
+      xprintf ("op   : Best solution value: %.0f\n", op->sol->val);
+      xprintf ("op   : Visited: %d\n", op->sol->ns);
     }
     else if ( prob->op->sol_stat == COMPASS_NOFEAS )
     { xprintf("\n");

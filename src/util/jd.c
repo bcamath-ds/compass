@@ -1,11 +1,5 @@
-/* jd.c (conversions between calendar date and Julian day number) */
-
 /***********************************************************************
 *  This code is part of Compass.
-*
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
 *
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
@@ -132,7 +126,7 @@ int jdate(int j, int *d_, int *m_, int *y_)
       return 0;
 }
 
-#ifdef GLP_TEST
+#ifdef COMPASS_TEST
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

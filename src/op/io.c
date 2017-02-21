@@ -1,10 +1,6 @@
 /***********************************************************************
 *  This code is part of Compass.
 *
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
-*
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
 *  the Free Software Foundation, either version 3 of the License, or
@@ -86,11 +82,11 @@ static void warning( const char *fname, const char *fmt, const int count, ...)
 /***********************************************************************
 *  NAME
 *
-*  compass_read_op_prob - read Orienteering Problem data in LIB format
+*  compass_read_prob - read Orienteering Problem data in LIB format
 *
 *  SYNOPSIS
 *
-*  int compass_read_op_prob(compass_prob *prob, int fmt, const op_opcp *parm,
+*  int compass_read_prob(compass_prob *prob, int fmt, const op_opcp *parm,
 *     const char *fname);
 *
 *  DESCRIPTION
@@ -114,7 +110,7 @@ static void warning( const char *fname, const char *fmt, const int count, ...)
 *
 *  RETURNS
 *
-*  If the operation was successful, the routine glp_read_mps returns zero.
+*  If the operation was successful, the routine compass_read_prob returns zero.
 *  Otherwise, it prints an error message and returns non-zero. */
 
 static int read_lib( compass_prob *prob, compass_file *fp)

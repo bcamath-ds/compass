@@ -1,10 +1,6 @@
 /***********************************************************************
 *  This code is part of Compass.
 *
-*  Copyright (C) 2000-2013 Andrew Makhorin, Department for Applied
-*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
-*  reserved. E-mail: <gkobeaga@bcamath.org>.
-*
 *  Compass is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
 *  the Free Software Foundation, either version 3 of the License, or
@@ -123,7 +119,7 @@ int compass_op_solve_ea (compass_prob *prob, op_population *pop, struct op_cp *o
       best_sol = &op->population->solution[op->population->best_ind];
       compass_op_copy_sol(prob, best_sol, op->sol);
       if (eacp->msg_lev >= COMPASS_MSG_ON)
-        xprintf("op   | GA :  %d it : best %.0f : worst %.0f (%.2f sec) \n",
+        xprintf("op   | EA :  %d it : best %.0f : worst %.0f (%.2f sec) \n",
             eacp->it ,op->population->best_val, op->population->worst_val,
             xdifftime(xtime(),eacp->tm_start));
 
