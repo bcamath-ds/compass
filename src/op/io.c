@@ -118,7 +118,6 @@ static int read_lib( compass_prob *prob, compass_file *fp)
   int matrixform = MATRIX_LOWER_DIAG_ROW;
   int scoresform = SCORES_FIXED;
   char buf[256], key[256], field[256];
-  int prob_type;
   char *p,*q;
   xprintf("\n");
   while (fgets (buf, 254,  (FILE *) fp->file) != (char *) NULL)
@@ -157,11 +156,10 @@ static int read_lib( compass_prob *prob, compass_file *fp)
 /* Type */
       else if (!strcmp (key, "TYPE"))
       { xprintf ("  Problem Type: %s", p);
-        if (sscanf (p, "%s", field) == EOF || strcmp (field, "OP"))
-        { put_err_msg ( "Not a OP problem\n");
+        if (sscanf (p, "%s", field) == EOF )
+        { put_err_msg ( "Missing problem type\n");
           return 1;
         }
-        prob_type = COMPASS_SOLVE_OP;
       }
 /*--------------------------------------------------------------------------*/
 /* Comment */
@@ -200,6 +198,7 @@ static int read_lib( compass_prob *prob, compass_file *fp)
     { p += strlen (key);
       while (*p == ' ')
         p++;
+#if 0
 /*--------------------------------------------------------------------------*/
 /* TSP Solution */
       if (!strcmp (key, "TSP_SOLUTION"))
@@ -211,9 +210,10 @@ static int read_lib( compass_prob *prob, compass_file *fp)
         prob->tsp->sol_stat = COMPASS_OPT;
         xprintf ("  TSP solution: %.2f\n", prob->tsp->sol->val);
       }
+#endif
 /*--------------------------------------------------------------------------*/
 /* D0 */
-      else if (!strcmp (key, "COST_LIMIT"))
+      if (!strcmp (key, "COST_LIMIT"))
       { double d0;
         if (sscanf (p, "%s", field) == EOF)
           xprintf ("Not explicit COST_LIMIT\n");

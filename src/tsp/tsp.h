@@ -72,9 +72,9 @@ struct tsp_cp
 #define COMPASS_MSG_ON    2  /* normal output */
 #define COMPASS_MSG_ALL   3  /* full output */
 #define COMPASS_MSG_DBG   4  /* debug output */
-  int tm_start;             /* starting timestamp */
-  int tm_end;               /* ending timestamp */
-  int tm_lim;               /* time limit (milliseconds) */
+  double tm_start;             /* starting timestamp */
+  double tm_end;               /* ending timestamp */
+  double tm_lim;               /* time limit (milliseconds) */
 
   struct neigh_cp *neighcp;
 

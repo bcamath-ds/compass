@@ -123,7 +123,6 @@ err1: {  xprintf("LIB file processing error\n");
         ret = EXIT_FAILURE;
         goto done;
     }
-    csa->opcp->pinit = csa->prob->op->d0 / csa->prob->tsp->sol->val;
   }
   else
   { if (csa->solve_tsp && csa->solve_op )
@@ -146,7 +145,10 @@ err1: {  xprintf("LIB file processing error\n");
   if (csa->solve_tsp == COMPASS_ON )
     main_tsp(csa, argc, argv);
   if (csa->solve_op == COMPASS_ON )
+  { main_tsp(csa, argc, argv);
+    csa->opcp->pinit = sqrt(csa->prob->op->d0 / csa->prob->tsp->sol->val);
     main_op(csa, argc, argv);
+  }
   /*--------------------------------------------------------------------------*/
   /* Time and memory usage summary*/
   xprintf("\n");

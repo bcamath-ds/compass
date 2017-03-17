@@ -185,8 +185,7 @@ static void select_bernoulli ( compass_prob *prob, op_solution *sol,
       }
       else
       { x = rng_unif_01(prob->rstate);
-        if(  x < sqrt(sol->tot_n/sol->greedycount*p) )
-          // Obs: If n=greedycount => x<sqrt(p)
+        if(  x < p )
         { sol->selected[i] = 1;
           sol->sposition[j++] = i;
         }

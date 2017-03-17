@@ -45,9 +45,9 @@ void compass_tsp_solve (compass_prob *prob, struct tsp_cp *tspcp)
 
 int main_tsp (struct csa *csa, int ac, char **av)
 { int ret;
-  compass_prob *prob = csa->prob;
+  compass_prob *prob   = csa->prob;
   struct tsp_prob *tsp = prob->tsp;
-  struct tsp_cp *tspcp =csa->tspcp;
+  struct tsp_cp *tspcp = csa->tspcp;
   /* perform initialization */
 #if 0
   /*--------------------------------------------------------------------------*/
@@ -68,11 +68,12 @@ int main_tsp (struct csa *csa, int ac, char **av)
   compass_tsp_solve( prob, tspcp);
   /*--------------------------------------------------------------------------*/
   /* display statistics */
-
+  tspcp->msg_lev = COMPASS_MSG_ON;
   if (tspcp->msg_lev >= COMPASS_MSG_ON)
   { if ( tsp->sol_stat == COMPASS_OPT | tsp->sol_stat == COMPASS_FEAS )
     { xprintf ("\n");
-      xprintf ("tsp   : Best solution: %.0f\n", tsp->sol->val);
+      xprintf ("tsp  : Best solution value: %.0f\n", tsp->sol->val);
+      xprintf ("tsp  : Time: %.2f sec \n", xdifftime(xtime(),tspcp->tm_start));
     }
     else if ( tsp->sol_stat == COMPASS_NOFEAS )
     { xprintf("\n");

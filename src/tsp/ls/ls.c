@@ -205,6 +205,7 @@ static int call_linkern (compass_prob *prob, tsp_solution *sol,
   { if (tspcp->msg_lev >= COMPASS_MSG_ALL)
       xprintf("  length %f\% improved\n", tempsol->val/sol->val);
     compass_tsp_copy_sol(prob, tempsol, sol);
+    tsp->sol_stat = COMPASS_FEAS;
   }
   compass_tsp_delete_sol (tempsol);
   return 0;
