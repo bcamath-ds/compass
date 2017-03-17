@@ -105,6 +105,15 @@ int main_op (struct csa *csa, int ac, char **av)
     { xprintf ("\n");
       xprintf ("op   : Best solution value: %.0f\n", op->sol->val);
       xprintf ("op   : Visited: %d\n", op->sol->ns);
+
+      /* Write solution */
+      if (csa->out_sol)
+      { if (compass_write_op_sol ( prob, csa->out_sol ))
+        { fprintf (stderr, "could not write the solution\n");
+          ret = 1; goto done;
+        }
+      }
+
     }
     else if ( prob->op->sol_stat == COMPASS_NOFEAS )
     { xprintf("\n");

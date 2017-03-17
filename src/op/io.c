@@ -513,6 +513,69 @@ done:
 /*******************************************************************************
 *  NAME
 *
+*  compass_write_op_sol - write Orienteering Problem solution
+*
+*  SYNOPSIS
+*
+*  int compass_write_op_sol (op_prob *prob, const char *fname);
+*
+*  DESCRIPTION
+*
+*  The routine compass_write_op_sol writes the solution to a text file.
+*
+*  The character string fname specifies a name of the text file to be
+*  written.
+*
+*  RETURNS
+*
+*  If the operation was successful, the routine compass_write_op_sol returns
+*  zero. Otherwise, it prints an error message and returns non-zero. */
+
+int compass_write_op_sol(compass_prob *prob, const char *fname)
+{ int ret, i;
+  compass_file *fp;
+
+  struct op_solution *sol = prob->op->sol;
+
+  if (prob->op->sol == NULL) {
+    xprintf("No OP solution to write.\n");
+  }
+
+  xprintf("\n");
+  xprintf("Writing OP solution to '%s'...\n", fname);
+
+  fp = compass_open(fname, "w");
+  if (fp == NULL)
+  {  xprintf("Unable to create '%s' - %s\n", fname, get_err_msg());
+     ret = 1;
+     goto done;
+  }
+
+  xfprintf (fp, "NAME : %s\n", prob->name );
+  xfprintf (fp, "TYPE : OP\n");
+  xfprintf (fp, "DIMENSION : %d\n", prob->n );
+  xfprintf (fp, "COST_LIMIT : %.2f\n", prob->op->d0 );
+  xfprintf (fp, "ROUTE_NODES : %d\n", sol->ns );
+  xfprintf (fp, "ROUTE_SCORE : %.2f\n", sol->val );
+  xfprintf (fp, "ROUTE_COST : %.2f\n", sol->length );
+  xfprintf (fp, "NODE_SEQUENCE_SECTION\n");
+  for ( i=0; i< sol->ns; i++)
+    xfprintf (fp, "%d\n", sol->cycle[i] +1 );
+  xfprintf (fp, "-1\n");
+  xfprintf (fp, "EOF\n");
+
+  ret = 0;
+done:
+
+  if (fp != NULL)
+    compass_close(fp);
+
+  return ret;
+}
+
+/*******************************************************************************
+*  NAME
+*
 *  compass_write_op_stats - write Orienteering Problem execution stats
 *
 *  SYNOPSIS
