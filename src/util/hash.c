@@ -79,7 +79,7 @@ void compass_hash_update_time(compass_prob *prob, double tm)
 void compass_hash_print(unsigned char hash[])
 { int i;
   xprintf("  Problem hash: ");
-  for (idx=0; idx < 32; idx++)
-    xprintf("%02x",hash[idx]);
+  for (i=0; i < 32; i++)
+    xprintf("%02x",hash[i]);
   xprintf("\n");
 }
