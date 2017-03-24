@@ -44,6 +44,8 @@ static void init_prob(compass_prob *prob)
   //prob->kdtree = xcalloc(1, sizeof(CCkdtree *));
   prob->tsp = (struct tsp_prob *) NULL;
   prob->op = (struct op_prob *) NULL;
+  prob->hash = xcalloc(32,sizeof(unsigned char));
+  prob->ctx = xmalloc(sizeof(SHA256_CTX));
   return;
 }
 

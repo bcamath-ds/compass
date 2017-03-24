@@ -58,6 +58,7 @@ util/dheaps_i.c \
 util/edgemap.c \
 util/edgeutil.c \
 util/fastread.c \
+util/hash.c \
 util/safe_io.c \
 util/urandom.c \
 util/rng.c \

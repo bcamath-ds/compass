@@ -20,6 +20,7 @@
 
 #include "data/data.h"
 #include "gsl/gsl_rng.h"
+#include <openssl/sha.h>
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -42,6 +43,10 @@ extern "C" {
 #define COMPASS_SOLVE_TSP 0
 #define COMPASS_SOLVE_OP  1
 
+#define HASH_UPDATE_NAME      0
+#define HASH_UPDATE_OPD0      1
+#define HASH_UPDATE_OPSCORE   2
+
 typedef struct compass_prob compass_prob;
 typedef struct CCkdtree CCkdtree;
 typedef struct CCrandstate CCrandstate;
@@ -54,6 +59,8 @@ struct compass_prob
   void           *pool;
   /* memory pool to store problem object components */
   char          *name;
+  unsigned char *hash;
+  SHA256_CTX    *ctx;
   /* problem name (1 to 255 chars); NULL means no name is assigned
   to the problem */
   int           n_max;
@@ -117,6 +124,8 @@ struct csa
   int seed;
   /* seed value to be passed to the MathProg translator; initially
      set to 1; 0x80000000 means the value is omitted */
+  int hash_tm;
+  /* hash problem using time stamp */
   const char *in_res;
   /* name of input solution file in raw format */
   int scale;

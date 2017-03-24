@@ -602,7 +602,7 @@ done:
 
 int compass_write_op_stats(compass_prob *prob, struct op_cp *opcp,
     const char *fname)
-{ int ret, recno;
+{ int ret, recno, i;
   compass_file *fp;
   struct op_prob *op = prob->op;
   xprintf("Writing excution stats to '%s'...\n", fname);
@@ -620,7 +620,7 @@ int compass_write_op_stats(compass_prob *prob, struct op_cp *opcp,
   unsigned long flen = (unsigned long)ftell( (FILE *)(fp->file));
   if (flen == 0 )
     xfprintf (fp, "name,\tn,\ttsp,\tnorm,\td0,\tobj,\tlen,\tvis,\ttime,"
-        "\tneighg,\tneighk,\ttour,\ttspls,\tprepr,\tsel,\tadd,\tdrop,\tit,\tnpop,\tpgreedy,\tpinit,\tnpar,\timpr1,\timpr2,\td2d,\tstoppop,\tpmut\n");
+        "\tneighg,\tneighk,\ttour,\ttspls,\tprepr,\tsel,\tadd,\tdrop,\tit,\tnpop,\tpgreedy,\tpinit,\tnpar,\timpr1,\timpr2,\td2d,\tstoppop,\tpmut, \thash\n");
   /* write problem records */
   xfprintf (fp, "%s,\t", prob->name );
   xfprintf (fp, "%d,\t", prob->n );
@@ -651,7 +651,10 @@ int compass_write_op_stats(compass_prob *prob, struct op_cp *opcp,
   xfprintf (fp, "%d,\t", opcp->eacp->len_improve2 );
   xfprintf (fp, "%d,\t", opcp->eacp->d2d );
   xfprintf (fp, "%d,\t", opcp->stop_pop );
-  xfprintf (fp, "%.2f\n", opcp->eacp->pmut );
+  xfprintf (fp, "%.2f,\t", opcp->eacp->pmut );
+  for (i=0; i < 32; i++)
+    xfprintf(fp, "%02x",prob->hash[i]);
+  xfprintf (fp, "\n");
   if (compass_ioerr(fp))
   { xprintf("Write error on '%s' - %s\n", fname, get_err_msg());
     ret = 1;

@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
   csa->stats_file = NULL;
   csa->out_dpy = NULL;
   csa->seed = (int) CCutil_real_zeit ();
+  csa->hash_tm = 0;
   csa->tspcp = compass_tsp_init_cp();
   csa->opcp = compass_op_init_cp();
   csa->neighcp = compass_neigh_init_cp();
@@ -135,6 +136,15 @@ err1: {  xprintf("LIB file processing error\n");
   /* change problem name, if required */
   if (csa->new_name != NULL)
     compass_set_prob_name(csa->prob, csa->new_name);
+  /*--------------------------------------------------------------------------*/
+  /* hash the problem */
+  compass_hash_init(csa->prob);
+  compass_hash_update(csa->prob, HASH_UPDATE_NAME);
+  compass_hash_update(csa->prob, HASH_UPDATE_OPSCORE);
+  compass_hash_update(csa->prob, HASH_UPDATE_OPD0);
+  if (csa->hash_tm)
+    compass_hash_update_time(csa->prob, csa->tm_start);
+  compass_hash_print(csa->prob->hash);
   /******************************************/
   compass_init_rng(csa->prob, csa->seed);
   /*--------------------------------------------------------------------------*/
@@ -240,6 +250,7 @@ static void print_help(const char *my_name)
                                     NEIGH_NEAREST, NEIGH_QUADNEAREST,
                                     NEIGH_DELAUNAY);
   xprintf("  --scale              Scale problem (default)\n");
+  xprintf("  --hash-with-tm       Hash the problem using initialization time\n");
   xprintf("  --noscale            Do not scale problem\n");
   xprintf("\n");
   xprintf("Traveller Salesman Problem options:\n");
@@ -370,6 +381,8 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
         return 1;
       }
     }
+    else if (p("--hash-with-tm"))
+      csa->hash_tm = 1;
     else if ( p("--stats"))
     { k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
