@@ -562,6 +562,9 @@ int compass_write_op_sol(compass_prob *prob, const char *fname)
   for ( i=0; i< sol->ns; i++)
     xfprintf (fp, "%d\n", sol->cycle[i] +1 );
   xfprintf (fp, "-1\n");
+  xfprintf (fp, "DEPOT_SECTION\n");
+  xfprintf (fp, "%d\n",prob->op->from+1);
+  xfprintf (fp, "-1\n");
   xfprintf (fp, "EOF\n");
 
   ret = 0;
