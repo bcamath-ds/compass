@@ -234,7 +234,7 @@ void compass_op_init_eacp(struct op_eacp *eacp)
   eacp->d2d = 50;
   eacp->nparsel = 10;
   eacp->pinit = 0.5;
-  eacp->pmut = 0.05;
+  eacp->pmut = 0.01;
   eacp->len_improve1 = 1;
   eacp->len_improve2 = 0;
   return;
