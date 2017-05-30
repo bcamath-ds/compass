@@ -434,20 +434,18 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       csa->out_res = argv[k];
     }
     else if (p("--tmlim"))
-    { int tm_lim;
+    { double tm_lim;
       k++;
       if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
       { xprintf("No time limit specified\n");
         return 1;
       }
-      if (str2int(argv[k], &tm_lim) || tm_lim < 0)
+      if (str2num(argv[k], &tm_lim) || tm_lim < 0)
       { xprintf("Invalid time limit '%s'\n", argv[k]);
         return 1;
       }
-      if (tm_lim <= INT_MAX / 1000)
-        csa->tm_lim = 1000 * tm_lim;
-      else
-        csa->tm_lim = INT_MAX;
+      csa->tm_lim = tm_lim;
+      csa->opcp->eacp->tm_lim = tm_lim;
     }
     else if (p("--memlim"))
     { int mem_lim;
