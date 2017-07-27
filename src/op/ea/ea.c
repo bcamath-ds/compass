@@ -80,18 +80,12 @@ int compass_op_solve_ea (compass_prob *prob, op_population *pop, struct op_cp *o
   parent = xcalloc( eacp->nparsel, sizeof(int));
   child = xcalloc(1, sizeof(op_solution));
   compass_op_init_sol(prob, child);
+  eacp->tm_start = xtime();
   //compass_op_init_sol(prob, best_sol);
 /*----------------------------------------------------------------------------*/
   if (prob->n < 4)
   { xprintf ("Less than 4 node problem\n");
     goto done;
-  }
-  if (opcp->stats_file)
-  { eacp->tm_end = opcp->tm_end = xtime();
-    if (compass_write_op_stats ( prob, opcp, opcp->stats_file ))
-    { fprintf (stderr, "could not write the results\n");
-      ret = 1; goto cleanup;
-    }
   }
 /*----------------------------------------------------------------------------*/
 /* Main Loop */
@@ -126,16 +120,9 @@ int compass_op_solve_ea (compass_prob *prob, op_population *pop, struct op_cp *o
       if (opcp->stop_pop)
         if (op->population->best_val == op->population->stop_val)
           break;
-      if (xdifftime(xtime(),eacp->tm_start) > eacp->tm_lim)
+      if (xdifftime(xtime(),opcp->tm_start) > opcp->tm_lim ||
+          xdifftime(xtime(),eacp->tm_start) > eacp->tm_lim )
           break;
-    }
-  }
-  op->sol_stat = COMPASS_FEAS;
-  if (opcp->stats_file)
-  { eacp->tm_end = opcp->tm_end = xtime();
-    if (compass_write_op_stats ( prob, opcp, opcp->stats_file ))
-    { fprintf (stderr, "could not write the results\n");
-      ret = 1; goto cleanup;
     }
   }
 /*----------------------------------------------------------------------------*/
@@ -143,6 +130,10 @@ cleanup:
   xfree(parent);
   compass_op_delete_sol(child);
 done:
+  eacp->tm_end = xtime();
+  compass_op_copy_sol(prob, op->sol, eacp->best);
+  op->sol_stat = COMPASS_FEAS;
+
   return ret;
 }
 
@@ -230,12 +221,13 @@ void compass_op_init_eacp(struct op_eacp *eacp)
   eacp->tm_start = xtime();
   eacp->tm_lim = 18000.;
   eacp->it_lim = INT_MAX;
+  eacp->it = 0;
   eacp->pop_size = 100;
   eacp->d2d = 50;
   eacp->nparsel = 10;
-  eacp->pinit = 0.5;
   eacp->pmut = 0.01;
   eacp->len_improve1 = 1;
   eacp->len_improve2 = 0;
+  eacp->best = xcalloc(1, sizeof(op_solution));
   return;
 }

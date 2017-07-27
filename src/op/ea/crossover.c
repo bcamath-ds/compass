@@ -626,14 +626,11 @@ cleanup:
     xfree(scount);
   }
   else
-  {
-    if (rng_unif_01(prob->rstate) < 0.5) {
-      op_solution *par = &pop->solution[parent[0]];
-      compass_op_copy_sol(prob, par, child);
-    } else {
-      op_solution *par = &pop->solution[parent[1]];
-      compass_op_copy_sol(prob, par, child);
-    }
-
+  { op_solution *par;
+    if (rng_unif_01(prob->rstate) < 0.5)
+      par = &pop->solution[parent[0]];
+    else
+      par = &pop->solution[parent[1]];
+    compass_op_copy_sol(prob, par, child);
   }
 }

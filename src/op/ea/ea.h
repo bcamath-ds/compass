@@ -35,4 +35,5 @@ struct op_eacp
   int nparsel;
   double pinit;
   int d2d;
+  struct op_solution *best;
 };
