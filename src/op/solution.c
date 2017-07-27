@@ -258,7 +258,7 @@ void compass_op_fit_solution ( compass_prob *prob, op_solution *sol,
   &sol->ns, sol->selected, sol->sposition, sol->cycle, sol->genotype, &sol->length,
   prob->op->s, prob->op->d0, prob->rstate_cc);
 
-  OPadd_operator (prob->kdtree, prob->n, prob->data,
+  OPadd_operator (prob->kdtree, prob->n, prob,
   &sol->ns, sol->selected, sol->sposition, sol->cycle, sol->genotype, &sol->length,
   prob->op->d0, prob->rstate_cc);
 
