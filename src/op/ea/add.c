@@ -16,6 +16,7 @@
 ***********************************************************************/
 
 #include "compass.h"
+#include "op.h"
 #include "env.h"
 #include "data/kdtree/kdtree.h"
 #include <gsl/gsl_vector.h>
@@ -40,7 +41,7 @@ static void
   get_best_position (compass_data *data, int scount, int *genotype, int node, struct neighbour *neighbour,
     struct position *pos);
 
-int OPadd_operator (CCkdtree *kt, int ncount, compass_data *data,
+int OPadd_operator (CCkdtree *kt, int ncount, compass_prob *prob,
     int *scount, int *selected, int *sposition, int *cycle, int *genotype, double *val,
     double cost_limit, CCrandstate *rstate)
 {
@@ -48,7 +49,7 @@ int OPadd_operator (CCkdtree *kt, int ncount, compass_data *data,
     int i, j, prev, next;
     int nodesel, nodeprev, nodenext;
     int first, completed;
-    double len, cost, best;
+    double len, cost, best, addvalue;
     struct neighbour *neighbour = (struct neighbour *) NULL;
     struct position *pos = (struct position *) NULL;
 
@@ -84,13 +85,32 @@ int OPadd_operator (CCkdtree *kt, int ncount, compass_data *data,
 
     do {
 
-      best = BIGDOUBLE;
+      best = -BIGDOUBLE;
+      //best = BIGDOUBLE;
       for (i = 1; i < ncount; i++) {
         if (!selected[i]) {
           struct neighbour *nodeneigh = &neighbour[i];
-          get_node_3_nearest (kt, ncount, data, *scount, i, selected, nodeneigh, first, rstate);
-          get_best_position (data, *scount, genotype, i, nodeneigh, pos);
+          get_node_3_nearest (kt, ncount, prob->data, *scount, i, selected, nodeneigh, first, rstate);
+          get_best_position (prob->data, *scount, genotype, i, nodeneigh, pos);
 
+#if 1
+          if (pos->cost <= cost_limit - len )
+            addvalue = prob->op->s[i]/pos->cost;
+          else
+            addvalue = -BIGDOUBLE;
+
+          if ( addvalue > best) {
+            nodesel   = i;
+            nodeprev  = pos->prev;
+            nodenext  = pos->next;
+            cost = pos->cost;
+            best = addvalue;
+          }
+        }
+      }
+
+      if ( best > -BIGDOUBLE ) {
+#else
           if (pos->cost < best) {
             nodesel   = i;
             nodeprev  = pos->prev;
@@ -100,7 +120,9 @@ int OPadd_operator (CCkdtree *kt, int ncount, compass_data *data,
         }
       }
 
-      if ( len + best < cost_limit ) {
+      if ( best < BIGDOUBLE ) {
+#endif
+
         genotype[nodeprev] = nodesel;
         genotype[nodesel] = nodenext;
         selected[nodesel] = 1;
@@ -116,7 +138,7 @@ int OPadd_operator (CCkdtree *kt, int ncount, compass_data *data,
           }
         }
 
-        len += best;
+        len += cost;
         first = 0;
         struct neighbour *nodeneigh = &(neighbour[nodesel]);
         xfree(nodeneigh->node);
