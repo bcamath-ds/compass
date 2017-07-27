@@ -46,10 +46,21 @@ int compass_op_start_solution ( compass_prob *prob, op_solution *sol,
     struct op_cp *opcp)
 /*****************************************************************************/
 { int ret = 0;
-  compass_op_select_nodes(prob, sol, opcp);
-  compass_op_start_cycle(prob, sol, sol->selected, opcp->tspcp);
+
+  struct op_initcp *initcp = opcp->initcp;
+
+  if (initcp->init_tech == OP_INIT_BEST3)
+  { compass_op_select_best3nodes(prob, sol, opcp);
+  }
+  else if (initcp->init_tech == OP_INIT_RAND)
+  { compass_op_select_nodes(prob, sol, opcp);
+    compass_op_start_cycle(prob, sol, sol->selected, opcp->tspcp);
+  }
+  else
+    ret =1;
+
   compass_op_fit_solution(prob, sol, opcp);
-  compass_op_update_pop(prob->op->population);
+
   return ret;
 }
 
@@ -68,7 +79,26 @@ int compass_op_start_population ( compass_prob *prob, op_population *pop,
     { xprintf(" %d: nvis: %d, length %.0f, value %.0f\n",
           i, sol->ns, sol->length, sol->val);
     }
+    if (xdifftime(xtime(), opcp->tm_start) > opcp->tm_lim )
+    { pop->size = opcp->pop_size = i+1;
+      break;
+    }
   }
+  compass_op_update_pop(pop);
+
 done:
   return ret;
+}
+
+void compass_op_init_initcp(struct op_initcp *initcp)
+{ initcp->msg_lev = COMPASS_MSG_ON;
+  initcp->tm_start = xtime();
+  initcp->tm_lim = 18000.;
+  initcp->pop_size = 100;
+  initcp->pgreedy = 0.;
+  initcp->pinit = 0;
+  initcp->init_tech = OP_INIT_RAND;
+  initcp->sel_tech = OP_SEL_BERNOULLI;
+  initcp->best = xcalloc(1, sizeof(op_solution));
+  return;
 }

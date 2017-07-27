@@ -19,6 +19,7 @@
 #define OP_H
 #include "env.h"
 #include "tsp/tsp.h"
+#include "op/init/init.h"
 #include "op/ea/ea.h"
 
 typedef struct op_solution op_solution;
@@ -73,8 +74,10 @@ struct op_prob
   /* number of non-excluded (d/2<d0) nodes in the preproccess , nne >= 0 */
   //int ecount;
   double      *s;
-  /* Node scores object */
+  /* Cost limit */
   double      d0;
+  /* Total score (sum of scores)*/
+  int         tot_score;
   /* OP dist-limit */
   int      from;
   /* Departure node */
@@ -111,10 +114,6 @@ struct op_cp
 #define OP_PP_NONE       0    /* disable preprocessing */
 #define OP_PP_ROOT       1    /* preprocessing only on root level */
 #define OP_PP_ALL        2    /* preprocessing on all levels */
-  int sel_tech;
-#define OP_SEL_BERNOULLI 0    /* select using Bernoully */
-  double pgreedy;                /* Greediness parameter */
-  double pinit;                /* Bernoully p for initial population */
   int heur_tech;            /* heuristic technique: */
 #define OP_HEUR_NONE     0    /* disable heuristic */
 #define OP_HEUR_EA       1    /* Genetic Algorithm */
@@ -130,30 +129,10 @@ struct op_cp
   int exact;                /* Find exact solution */
   int nruns;                /* Number of repetitions */
   struct tsp_cp *tspcp;             /* TSP control parameters */
-  struct op_eacp *eacp;             /* EA control parameters */
+  struct op_initcp *initcp;             /* Initialization control parameters */
+  struct op_eacp *eacp;             /* Evolutionary Algorithm control parameters */
   struct op_iacp *iacp;             /* Iteractive Algorithm control parameters */
   const char *stats_file;
 };
 
 #endif
-
-
-#if 0
-typedef struct op_data_user {
-    double  *x;
-    double  *y;
-} op_data_user;
-
-typedef struct op_data_rhvector {
-    int dist_00;
-    int dist_01;
-    int dist_02;
-    int dist_12;
-    int dist_22;
-    double p;
-    int rhlength;
-    char *space;
-    char **vectors;
-} op_data_rhvector;
-#endif
-

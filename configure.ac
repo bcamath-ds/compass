@@ -42,6 +42,7 @@ AC_CONFIG_LINKS([ src/compass.h:src/compass.h
                   src/tsp/tsp.h:src/tsp/tsp.h
                   src/op/op.h:src/op/op.h
                   src/op/ea/ea.h:src/op/ea/ea.h
+                  src/op/init/init.h:src/op/init/init.h
                  ])
 
 # Checks for typedefs, structures, and compiler characteristics.

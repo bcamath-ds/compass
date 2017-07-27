@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
   csa->log_file = NULL;
   csa->crash = USE_ADV_BASIS;
   csa->ini_file = NULL;
-  //csa->exact = 0;
   csa->solve_tsp = 0;
   csa->solve_op = 0;
   csa->xcheck = 0;
@@ -155,8 +154,10 @@ err1: {  xprintf("LIB file processing error\n");
   if (csa->solve_tsp == COMPASS_ON )
     main_tsp(csa, argc, argv);
   if (csa->solve_op == COMPASS_ON )
-  { main_tsp(csa, argc, argv);
-    csa->opcp->pinit = sqrt(csa->prob->op->d0 / csa->prob->tsp->sol->val);
+  { if (csa->opcp->initcp->pinit==0)
+    { main_tsp(csa, argc, argv);
+      csa->opcp->initcp->pinit = sqrt(csa->prob->op->d0 / csa->prob->tsp->sol->val);
+    }
     main_op(csa, argc, argv);
   }
   /*--------------------------------------------------------------------------*/
@@ -289,7 +290,7 @@ static void print_help(const char *my_name)
   xprintf("  --op-pgreedy p       Greediness parameter\n");
   xprintf("\n");
   xprintf("  (OP) Evolutionary Algorithm options:\n");
-  xprintf("  --ea                 Use Evolutionary Algorithm (default)\n");
+  xprintf("  --op-ea4op           Use Evolutionary Algorithm\n");
   xprintf("  --ea-itlim n         Number of iterations\n");
   xprintf("  --ea-improve1 d      1 if on. 0 else.\n");
   xprintf("  --ea-improve2 d      1 if On. 0 else.\n");
@@ -301,24 +302,6 @@ static void print_help(const char *my_name)
   xprintf("  --ea-nparsel n       Number of parents preselected\n");
   //xprintf("   --exact           use simplex method based on exact arithmetic\n");
   xprintf("\n");
-#if 0
-  xprintf("   (OP) 2-paramenter Iteractive Algorithm options:\n");
-  xprintf("   --2pia              Use 2p-IA method\n");
-  xprintf("\n");
-  xprintf("MIP solver options:\n");
-  xprintf("   --mip               Use MIP method\n");
-  xprintf("   --nomip             consider all integer variables as c"
-     "ontinuous (LP)\n");
-  xprintf("                       (allows solving MIP as pure LP)\n");
-  xprintf("   --first             branch on first integer variable\n")
-     ;
-  xprintf("   --last              branch on last integer variable\n");
-  xprintf("   --mostf             branch on most fractional variable "
-     "\n");
-  xprintf("   --mipgap tol        set relative mip gap tolerance to t"
-     "ol\n");
-  xprintf("\n");
-#endif
   xprintf("For description of the TSPLIB format see Reference Manual.\n"
     "<http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/DOC.PS>.\n");
   xprintf("\n");
@@ -445,6 +428,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
         return 1;
       }
       csa->tm_lim = tm_lim;
+      csa->opcp->tm_lim = tm_lim;
       csa->opcp->eacp->tm_lim = tm_lim;
     }
     else if (p("--memlim"))
@@ -638,7 +622,9 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       { xprintf("Invalid population size '%s'\n", argv[k]);
         return 1;
       }
-      csa->opcp->pop_size = csa->opcp->eacp->pop_size = size;
+      csa->opcp->pop_size = size;
+      csa->opcp->initcp->pop_size = size;
+      csa->opcp->eacp->pop_size = size;
     }
     else if (p("--stop-pop"))
     { int per;
@@ -755,7 +741,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       { xprintf("Invalid initialization probability '%s'\n", argv[k]);
         return 1;
       }
-      csa->opcp->eacp->pinit = pinit;
+      csa->opcp->initcp->pinit = pinit;
     }
     else if (p("--op-pgreedy"))
     { double pgreedy;
@@ -768,7 +754,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       { xprintf("Invalid greediness parameter '%s'\n", argv[k]);
         return 1;
       }
-      csa->opcp->pgreedy = pgreedy;
+      csa->opcp->initcp->pgreedy = pgreedy;
     }
     else if (p("--op-add"))
     { int add;
@@ -782,9 +768,9 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
         return 1;
       }
       switch (add) {
-      case OP_ADD_D: csa->opcp->add = OP_ADD_D;
-      case OP_ADD_SD: csa->opcp->add = OP_ADD_SD;
-      case OP_ADD_S: csa->opcp->add = OP_ADD_S;
+      case OP_ADD_D: csa->opcp->add = OP_ADD_D;break;
+      case OP_ADD_SD: csa->opcp->add = OP_ADD_SD;break;
+      case OP_ADD_S: csa->opcp->add = OP_ADD_S;break;
       default:
         xprintf("Invalid sorting rule for the add phase '%s'\n", argv[k]);
         print_help (argv[0]);
@@ -803,9 +789,9 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
         return 1;
       }
       switch (drop) {
-      case OP_DROP_D: csa->opcp->drop = OP_DROP_D;
-      case OP_DROP_SD: csa->opcp->drop = OP_DROP_SD;
-      case OP_DROP_S: csa->opcp->drop = OP_DROP_S;
+      case OP_DROP_D: csa->opcp->drop = OP_DROP_D;break;
+      case OP_DROP_SD: csa->opcp->drop = OP_DROP_SD;break;
+      case OP_DROP_S: csa->opcp->drop = OP_DROP_S;break;
       default:
         xprintf("Invalid sorting rule for the drop phase '%s'\n", argv[k]);
         print_help (argv[0]);
@@ -816,6 +802,26 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
     /* OP solver general parameters*/
     else if (p("--op-preproccess"))
       csa->opcp->pp_tech = OP_PP_ROOT;
+    else if (p("--op-init-tech"))
+    { int init_tech;
+      k++;
+      if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
+      { xprintf("No technique specified for the initialization phase\n");
+        return 1;
+      }
+      if (str2int(argv[k], &init_tech) || init_tech < 0)
+      { xprintf("Invalid technique for the initialization phase '%s'\n", argv[k]);
+        return 1;
+      }
+      switch (init_tech) {
+      case  OP_INIT_BEST3: csa->opcp->initcp->init_tech = OP_INIT_BEST3;break;
+      case  OP_INIT_RAND: csa->opcp->initcp->init_tech = OP_INIT_RAND;break;
+      default:
+        xprintf("Invalid technique for the initialization phase '%s'\n", argv[k]);
+        print_help (argv[0]);
+        return 1;
+      }
+    }
     else if (p("--nruns"))
     { int nruns;
       k++;
@@ -831,7 +837,7 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
     }
     /*------------------------------------------------------------------------*/
     /* Evolutionary Algorithm parameters */
-    else if (p("--op-ea"))
+    else if (p("--op-ea4op"))
       csa->opcp->heur_tech = OP_HEUR_EA;
     else if (p("--ea-itlim"))
     { int it_lim;
@@ -909,40 +915,15 @@ static int parse_cmdline(struct csa *csa, int argc, char *argv[])
       { xprintf("Invalid number of iterations '%s' for d2d\n", argv[k]);
         return 1;
       }
-      csa->opcp->eacp->d2d = d2d;
+      if (csa->opcp->eacp->pop_size < d2d + 1 )
+      { //xprintf("Pameter d2d can not be greater than npop\n");
+        d2d = floor(csa->opcp->eacp->pop_size/2);
+        //xprintf("Setting d2d as %d\n", d2d);
+        csa->opcp->eacp->d2d =  d2d;
+      }
+      else
+        csa->opcp->eacp->d2d = d2d;
     }
-    /*------------------------------------------------------------------------*/
-    /* 2 Parameter Iteractive Algorithm parameters */
-#if 0
-    else if (p("--op-2pia"))
-      csa->opcp->heur_tech = OP_HEUR_2PIA;
-    else if (p("--2pia-numsel"))
-    { int num_sel;
-      k++;
-      if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
-      { xprintf("No parameter specified for 2PIA\n");
-        return 1;
-      }
-      if (str2int(argv[k], &num_sel) || num_sel < 1)
-      { xprintf("Invalid parameter for IA '%s'\n", argv[k]);
-        return 1;
-      }
-      csa->opcp->iacp->num_sel = num_sel;
-    }
-    else if (p("--2pia-itlim"))
-    { int it_lim;
-      k++;
-      if (k == argc || argv[k][0] == '\0' || argv[k][0] == '-')
-      { xprintf("No iteration limit specified\n");
-        return 1;
-      }
-      if (str2int(argv[k], &it_lim) || it_lim < 0)
-      { xprintf("Invalid iteration limit '%s'\n", argv[k]);
-        return 1;
-      }
-      csa->opcp->iacp->it_lim = it_lim;
-    }
-#endif
     /*------------------------------------------------------------------------*/
     else if (argv[k][0] == '-' || (argv[k][0] == '-' && argv[k][1] == '-'))
     { xprintf("Invalid option '%s'; try %s --help\n", argv[k], argv[0]);

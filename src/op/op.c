@@ -25,37 +25,36 @@ int compass_op_solve (compass_prob *prob, struct op_cp *opcp)
 { int ret;
   struct op_prob *op = prob->op;
   op_solution *best_sol;
+  compass_op_init_sol(prob, opcp->initcp->best);
+  compass_op_init_sol(prob, opcp->eacp->best);
   /* Initial solution */
+  opcp->tm_start = xtime();
   compass_op_node_ranking(prob, opcp);
   if ( opcp->heur_tech == OP_HEUR_EA)
   { if (opcp->msg_lev >= COMPASS_MSG_ON)
     { xprintf("\n");
       xprintf("op   : Building initial tours.\n");
     }
+    opcp->initcp->tm_start = xtime();
     compass_op_init_pop (prob, op->population, opcp->pop_size );
     op->population->stop_per = opcp->stop_pop;
     compass_op_start_population (prob, op->population, opcp);
     best_sol = &op->population->solution[op->population->best_ind];
-    compass_op_copy_sol(prob, best_sol, op->sol);
+    compass_op_copy_sol(prob, best_sol, opcp->initcp->best);
+    opcp->initcp->tm_end = xtime();
     if (opcp->msg_lev >= COMPASS_MSG_ON)
     { xprintf("op   : Best %.0f , Worst %.0f\n",
         op->population->best_val, op->population->worst_val);
       xprintf("op   : Time: %.2f sec \n", xdifftime(xtime(),opcp->tm_start));
     }
+    compass_op_copy_sol(prob, best_sol, op->sol);
   }
-#if 0
-  else if ( opcp->heur_tech == OP_HEUR_2PIA)
-  { if (opcp->msg_lev >= COMPASS_MSG_ON)
-    { xprintf("\n");
-      xprintf("op   : Building initial tours.\n");
-    }
-  }
-#endif
   else
     xassert(prob != prob);
   /* solve heuristically */
-  if ( opcp->heur_tech == OP_HEUR_NONE)
-    xprintf("No heuristic technique specified.\n");
+  if ( opcp->heur_tech == OP_HEUR_NONE )
+  {// xprintf("\n");
+  }
   else if ( opcp->heur_tech == OP_HEUR_EA)
   { if (opcp->msg_lev >= COMPASS_MSG_ON)
     { xprintf("\n");
@@ -74,15 +73,22 @@ int compass_op_solve (compass_prob *prob, struct op_cp *opcp)
 #endif
   else
     xassert(prob != prob);
-  /* solve exactly */
-  //if (csa->exact)
-    //compass_op_solve_exact(csa->prob, &csa->excp);
+
+  opcp->tm_end = xtime();
+
+  if (opcp->stats_file)
+  { opcp->tm_end = xtime();
+    if (compass_write_op_stats ( prob, opcp, opcp->stats_file ))
+    { fprintf (stderr, "could not write the results\n");
+      ret = 1; goto done;
+    }
+  }
   /*--------------------------------------------------------------------------*/
   /* all seems to be ok */
   ret = EXIT_SUCCESS;
   /*--------------------------------------------------------------------------*/
 done:
-  //if (op->population != NULL)
+  if (opcp->exact==0 & op->population != NULL)
   compass_op_delete_pop(op->population);
   return ret;
 }
@@ -142,19 +148,18 @@ struct op_cp *compass_op_init_cp(void)
   opcp = xmalloc(sizeof(struct op_cp));
   opcp->msg_lev = COMPASS_MSG_ON;
   opcp->tm_start = xtime();
-  opcp->tm_lim = INT_MAX;
+  opcp->tm_lim = 18000.;
   opcp->pp_tech = OP_PP_NONE;
   opcp->pop_size = 100;
   opcp->stop_pop = 25;
-  opcp->pgreedy = 0.;
-  opcp->pinit = 0.5;
-  opcp->sel_tech = OP_SEL_BERNOULLI;
-  opcp->heur_tech = OP_HEUR_EA;
+  opcp->heur_tech = OP_HEUR_NONE;
   opcp->exact = 0;
   opcp->nruns = 1;
   opcp->add = OP_ADD_D;
   opcp->drop = OP_DROP_SD;
   opcp->tspcp = compass_tsp_init_cp();
+  opcp->initcp = xmalloc(sizeof(struct op_initcp));
+  compass_op_init_initcp( opcp->initcp);
   opcp->eacp = xmalloc(sizeof(struct op_eacp));
   compass_op_init_eacp( opcp->eacp);
   return opcp;

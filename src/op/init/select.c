@@ -61,13 +61,14 @@ void compass_op_select_nodes (compass_prob *prob, op_solution *sol,
     struct op_cp *opcp)
 /**********************************************************************/
 { struct op_prob *op = prob->op;
+  struct op_initcp *initcp = opcp->initcp;
   int i,j;
 
-  if (opcp->pgreedy != 0.0)
-    select_nodes_greedily(prob, sol,opcp->pgreedy);
+  if (initcp->pgreedy != 0.0)
+    select_nodes_greedily(prob, sol,initcp->pgreedy);
 
-  if ( opcp->sel_tech == OP_SEL_BERNOULLI )
-  { select_bernoulli(prob, sol, opcp->pinit);
+  if ( initcp->sel_tech == OP_SEL_BERNOULLI )
+  { select_bernoulli(prob, sol, initcp->pinit);
   }
 
   return;
@@ -201,6 +202,68 @@ static void select_bernoulli ( compass_prob *prob, op_solution *sol,
   } while (ns <= 3);
   sol->ns = ns;
   eval_sol_obj(prob, sol);
+  return;
+}
+
+#define BIGDOUBLE (1e30)
+#define Edgelen(data, n1, n2)  CCutil_dat_edgelen (n1, n2, data)
+
+/**********************************************************************/
+void compass_op_select_best3nodes (compass_prob *prob, op_solution *sol,
+    struct op_cp *opcp)
+/**********************************************************************/
+{ int i, j, v1, v2;
+  double best_len, best_val, tmp_val, tmp_len;
+  struct op_prob *op = prob->op;
+
+  best_len= -BIGDOUBLE;
+  best_val= -BIGDOUBLE;
+  for(i=1;i<prob->n;i++)
+  { for(j=i+1;j<prob->n;j++){
+      tmp_val = op->s[0]+op->s[i]+op->s[j];
+      tmp_len = Edgelen(prob->data,0,i)+Edgelen(prob->data,0,j)+Edgelen(prob->data,i,j);
+      if( tmp_len < op->d0 && tmp_val > best_val )
+      { best_val=tmp_val;
+        best_len=tmp_len;
+        v1 = i;
+        v2 = j;
+      } else if( tmp_len < best_len && tmp_val == best_val )
+      { best_val=tmp_val;
+        best_len=tmp_len;
+        v1 = i;
+        v2 = j;
+      }
+    }
+  }
+
+  if(best_val== -BIGDOUBLE)
+    return;
+
+
+  sol->selected[0] = 1;
+  sol->selected[v1] = 1;
+  sol->selected[v2] = 1;
+
+  for (i=0; i<prob->n; i++)
+    sol->genotype[i] = i;
+
+  sol->genotype[0] = v1;
+  sol->genotype[v1] = v2;
+  sol->genotype[v2] = 0;
+
+  sol->cycle[0] = 0;
+  sol->cycle[1] = v1;
+  sol->cycle[2] = v2;
+  sol->ns = 3;
+  sol->val = best_val;
+  sol->length = best_len;
+
+  j = 0;
+  for (i = 0; i < prob->n; i++)
+  { if (sol->selected[i])
+      sol->sposition[j++] = i;
+  }
+
   return;
 }
 
