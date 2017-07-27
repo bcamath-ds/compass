@@ -608,6 +608,7 @@ int compass_write_op_stats(compass_prob *prob, struct op_cp *opcp,
 { int ret, recno, i;
   compass_file *fp;
   struct op_prob *op = prob->op;
+  xprintf("\n");
   xprintf("Writing excution stats to '%s'...\n", fname);
   if (prob->op == NULL) {
     xprintf("No OP problem to write.\n");
@@ -623,7 +624,7 @@ int compass_write_op_stats(compass_prob *prob, struct op_cp *opcp,
   unsigned long flen = (unsigned long)ftell( (FILE *)(fp->file));
   if (flen == 0 )
     xfprintf (fp, "name,\tn,\ttsp,\tnorm,\td0,\tobj,\tlen,\tvis,\ttime,"
-        "\tneighg,\tneighk,\ttour,\ttspls,\tprepr,\tsel,\tadd,\tdrop,\tit,\tnpop,\tpgreedy,\tpinit,\tnpar,\timpr1,\timpr2,\td2d,\tstoppop,\tpmut, \thash\n");
+        "\tneighg,\tneighk,\ttour,\ttspls,\tprepr,\tadd,\tdrop,\tnpop,\tINITtech,\tINITsel,\tINITpgreedy,\tINITpinit,\tEAnpar,\tEAimpr1,\tEAimpr2,\tEAd2d,\tEAstoppop,\tEApmut,\tINITobj,\tINITvis,\tINITtime,\tEAit,\tEAobj,\tEAtime,\thash\n");
   /* write problem records */
   xfprintf (fp, "%s,\t", prob->name );
   xfprintf (fp, "%d,\t", prob->n );
@@ -642,19 +643,25 @@ int compass_write_op_stats(compass_prob *prob, struct op_cp *opcp,
   xfprintf (fp, "%d,\t", opcp->tspcp->start_tour );
   xfprintf (fp, "%d,\t", opcp->tspcp->local_search );
   xfprintf (fp, "%d,\t", opcp->pp_tech );
-  xfprintf (fp, "%d,\t", opcp->sel_tech );
   xfprintf (fp, "%d,\t", opcp->add );
   xfprintf (fp, "%d,\t", opcp->drop );
-  xfprintf (fp, "%d,\t", opcp->eacp->it );
   xfprintf (fp, "%d,\t", opcp->pop_size );
-  xfprintf (fp, "%.2f,\t", opcp->pgreedy );
-  xfprintf (fp, "%.2f,\t", opcp->pinit );
+  xfprintf (fp, "%d,\t", opcp->initcp->init_tech );
+  xfprintf (fp, "%d,\t", opcp->initcp->sel_tech );
+  xfprintf (fp, "%.2f,\t", opcp->initcp->pgreedy );
+  xfprintf (fp, "%.2f,\t", opcp->initcp->pinit );
   xfprintf (fp, "%d,\t", opcp->eacp->nparsel );
   xfprintf (fp, "%d,\t", opcp->eacp->len_improve1 );
   xfprintf (fp, "%d,\t", opcp->eacp->len_improve2 );
   xfprintf (fp, "%d,\t", opcp->eacp->d2d );
   xfprintf (fp, "%d,\t", opcp->stop_pop );
   xfprintf (fp, "%.2f,\t", opcp->eacp->pmut );
+  xfprintf (fp, "%.0f,\t", opcp->initcp->best->val );
+  xfprintf (fp, "%d,\t", opcp->initcp->best->ns );
+  xfprintf (fp, "%.2f,\t", xdifftime(opcp->initcp->tm_end, opcp->initcp->tm_start ));
+  xfprintf (fp, "%d,\t", opcp->eacp->it );
+  xfprintf (fp, "%.0f,\t", opcp->eacp->best->val );
+  xfprintf (fp, "%.2f,\t", xdifftime(opcp->eacp->tm_end, opcp->eacp->tm_start ));
   for (i=0; i < 32; i++)
     xfprintf(fp, "%02x",prob->hash[i]);
   xfprintf (fp, "\n");
