@@ -64,7 +64,7 @@ The benchmark instances for the OP can be found in the OPLib repository:
 
 ```
 git clone https://github.com/bcamath-ds/OPLib
-./compass --op OPLib/gen3/eil101-gen3-50.oplib
+./compass --op --op-ea4op OPLib/gen3/eil101-gen3-50.oplib
 ```
 
 To see additional parameters and options:
