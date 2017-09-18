@@ -143,8 +143,8 @@ static void op_improve_lenght_pop ( compass_prob *prob, op_population *pop,
     struct tsp_cp *tspcp)
 /**********************************************************************/
 { int i;
-  compass_prob *tspprob;
-  tspprob = compass_init_prob();
+  compass_prob *tspprob = xmalloc(sizeof(compass_prob));
+  compass_init_prob(tspprob);
 
   for (i = 0; i < pop->size; i++)
   { op_solution *opsol = &pop->solution[i];

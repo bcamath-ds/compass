@@ -143,10 +143,8 @@ done:
   return ret;
 }
 
-struct op_cp *compass_op_init_cp(void)
-{ struct op_cp *opcp;
-  opcp = xmalloc(sizeof(struct op_cp));
-  opcp->msg_lev = COMPASS_MSG_ON;
+void compass_op_init_cp(struct op_cp* opcp)
+{ opcp->msg_lev = COMPASS_MSG_ON;
   opcp->tm_start = xtime();
   opcp->tm_lim = 18000.;
   opcp->pp_tech = OP_PP_NONE;
@@ -157,12 +155,13 @@ struct op_cp *compass_op_init_cp(void)
   opcp->nruns = 1;
   opcp->add = OP_ADD_D;
   opcp->drop = OP_DROP_SD;
-  opcp->tspcp = compass_tsp_init_cp();
+  opcp->tspcp = xmalloc(sizeof(struct tsp_cp));
+  compass_tsp_init_cp(opcp->tspcp);
   opcp->initcp = xmalloc(sizeof(struct op_initcp));
   compass_op_init_initcp( opcp->initcp);
   opcp->eacp = xmalloc(sizeof(struct op_eacp));
   compass_op_init_eacp( opcp->eacp);
-  return opcp;
+  return;
 }
 
 void compass_op_delete_cp(struct op_cp* opcp)

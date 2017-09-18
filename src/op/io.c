@@ -138,19 +138,19 @@ static int read_lib( compass_prob *prob, compass_file *fp)
         //else
        if (p[strlen(p)-2]=='\r')
        { p[strlen(p)-2] = '\0';
-         memcpy(prob->name , p,strlen(p)-2);
+          strcpy(prob->name , p);
        }
        if (p[strlen(p)-1]=='\n')
        { p[strlen(p)-1] = '\0';
-         memcpy(prob->name , p,strlen(p));
+          strcpy(prob->name , p);
                 }
        else {
          p[strlen(p)-2] = '\0';
-        memcpy(prob->name , p,strlen(p)-2);
+          strcpy(prob->name , p);
        }
         for (q = prob->name; q != '\0'; q++)
           *q = (char) tolower(*q);
-        xprintf ("  Problem Name: %s\n", p);
+        xprintf ("  Problem Name: %s\n", prob->name);
       }
 /*--------------------------------------------------------------------------*/
 /* Type */

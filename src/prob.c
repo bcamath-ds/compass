@@ -4,6 +4,7 @@
 #include "util.h"
 #include "env.h"
 #include <gsl/gsl_rng.h>
+#include "dmp.h"
 
 static const gsl_rng_type *T = NULL;
 
@@ -29,7 +30,9 @@ static const gsl_rng_type *T = NULL;
 
 static void init_prob(compass_prob *prob)
 { prob->magic = COMPASS_PROB_MAGIC;
-  prob->pool = dmp_create_pool();
+  xassert(sizeof(void *) <= 8);
+  prob->pool = talloc(1, DMP);
+  dmp_create_pool(prob->pool);
   prob->name = xcalloc(100,sizeof(char));
   memcpy(prob->name, "null", 5);
   prob->n = 1;
@@ -49,12 +52,11 @@ static void init_prob(compass_prob *prob)
   return;
 }
 
-compass_prob *compass_init_prob(void)
-{ compass_prob *prob;
-  prob = xmalloc(sizeof(compass_prob));
-  init_prob(prob);
-  return prob;
+void compass_init_prob(compass_prob *prob)
+{ init_prob(prob);
+  return;
 }
+
 
 void compass_init_rng(compass_prob *prob, int seed)
 { T = gsl_rng_default;

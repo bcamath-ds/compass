@@ -19,39 +19,6 @@
 #include "env.h"
 #include "dmp.h"
 
-struct DMP
-{     /* dynamic memory pool */
-      void *avail[32];
-      /* avail[k], 0 <= k <= 31, is a pointer to first available (free)
-       * atom of (k+1)*8 bytes long; at the beginning of each free atom
-       * there is a pointer to another free atom of the same size */
-      void *block;
-      /* pointer to most recently allocated memory block; at the
-       * beginning of each allocated memory block there is a pointer to
-       * previously allocated memory block */
-      int used;
-      /* number of bytes used in most recently allocated memory block */
-      size_t count;
-      /* number of atoms which are currently in use */
-};
-
-#define DMP_BLK_SIZE 8000
-/* size of memory blocks, in bytes, allocated for memory pools */
-
-struct prefix
-{     /* atom prefix (for debugging only) */
-      DMP *pool;
-      /* dynamic memory pool */
-      int size;
-      /* original atom size, in bytes */
-};
-
-#define prefix_size ((sizeof(struct prefix) + 7) & ~7)
-/* size of atom prefix rounded up to multiple of 8 bytes */
-
-int dmp_debug;
-/* debug mode flag */
-
 /***********************************************************************
 *  NAME
 *
@@ -60,30 +27,22 @@ int dmp_debug;
 *  SYNOPSIS
 *
 *  #include "dmp.h"
-*  DMP *dmp_create_pool(void);
+*  void dmp_create_pool(DMP *);
 *
 *  DESCRIPTION
 *
-*  The routine dmp_create_pool creates a dynamic memory pool.
-*
-*  RETURNS
-*
-*  The routine returns a pointer to the memory pool created. */
+*  The routine dmp_create_pool creates a dynamic memory pool. */
 
-DMP *dmp_create_pool(void)
-{     DMP *pool;
-      int k;
-      xassert(sizeof(void *) <= 8);
-      if (dmp_debug)
-         xprintf("dmp_create_pool: warning: debug mode is on\n");
-      pool = talloc(1, DMP);
-      for (k = 0; k <= 31; k++)
-         pool->avail[k] = NULL;
-      pool->block = NULL;
-      pool->used = DMP_BLK_SIZE;
-      pool->count = 0;
-      return pool;
+void dmp_create_pool( DMP *pool)
+{ int k;
+  for (k = 0; k <= 31; k++)
+    pool->avail[k] = NULL;
+    pool->block = NULL;
+    pool->used = DMP_BLK_SIZE;
+    pool->count = 0;
+  return;
 }
+
 
 /***********************************************************************
 *  NAME

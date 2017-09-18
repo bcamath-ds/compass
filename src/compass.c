@@ -44,9 +44,12 @@ int main(int argc, char *argv[])
   csa->out_dpy = NULL;
   csa->seed = (int) CCutil_real_zeit ();
   csa->hash_tm = 0;
-  csa->tspcp = compass_tsp_init_cp();
-  csa->opcp = compass_op_init_cp();
-  csa->neighcp = compass_neigh_init_cp();
+  csa->tspcp = xmalloc(sizeof(struct tsp_cp));
+  compass_tsp_init_cp(csa->tspcp);
+  csa->opcp = xmalloc(sizeof(struct op_cp));
+  compass_op_init_cp(csa->opcp);
+  csa->neighcp = xmalloc(sizeof(struct neigh_cp));
+  compass_neigh_init_cp(csa->neighcp);
   csa->in_res = NULL;
   csa->scale = 1;
   csa->out_sol = NULL;
@@ -108,7 +111,8 @@ int main(int argc, char *argv[])
   }
   /*--------------------------------------------------------------------------*/
   /* Initialize problem */
-  csa->prob = compass_init_prob();
+  csa->prob = xmalloc(sizeof(compass_prob));
+  compass_init_prob(csa->prob);
   /*--------------------------------------------------------------------------*/
   /* read problem from file*/
   if (csa->in_file == NULL)
@@ -311,8 +315,8 @@ static void print_help(const char *my_name)
 
 static void print_version(int briefly)
 { /* print version information */
-  xprintf("Compass: Combinatorial Optimization Problem Solver, v%s\n",
-      compass_version());
+  xprintf("Compass: Combinatorial Optimization Problem Solver, v%d.%d\n",
+         COMPASS_MAJOR_VERSION, COMPASS_MINOR_VERSION);
   if (briefly) goto done;
   xprintf("\n");
   xprintf("This program has ABSOLUTELY NO WARRANTY.\n");
@@ -324,6 +328,7 @@ done:
   xprintf("\n");
   return;
 }
+
 
 static int parse_cmdline(struct csa *csa, int argc, char *argv[])
 { /* parse command-line parameters */

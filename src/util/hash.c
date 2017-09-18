@@ -41,16 +41,26 @@ void compass_hash_update(compass_prob *prob, int flag)
   else if (flag == HASH_UPDATE_OPSCORE)
   { int i;
     char str[15];
+    int len;
     for (i=0; i<prob->n; i++)
-    { sprintf(str, "%f", prob->op->s[i]);
-      SHA256_Update(prob->ctx, str, strlen(str));
+    { if (prob->op->s[i])
+      { sprintf(str, "%f", prob->op->s[i]);
+        len =  ceil(log10(prob->op->s[i]));
+      }
+      else
+      { str[0] = "0";
+        len    = 1;
+      }
+      SHA256_Update(prob->ctx, str, len);
     }
   }
   else if (flag == HASH_UPDATE_OPD0)
   { char str[25];
+    int len;
     sprintf(str, "%f", prob->op->d0);
+    len =  ceil(log10(prob->op->d0));
 
-    SHA256_Update(prob->ctx, str, strlen(str));
+    SHA256_Update(prob->ctx, str, len);
     SHA256_Final(prob->hash, prob->ctx);
   }
   SHA256_Final(prob->hash, prob->ctx);

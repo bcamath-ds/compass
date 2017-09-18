@@ -94,37 +94,32 @@ done:
   return ret;
 }
 
-static struct tsp_lkcp *tsp_init_linkern_cp( void);
+void tsp_init_linkern_cp(struct tsp_lkcp *lkcp)
+{ lkcp->tm_start = xtime();
+  lkcp->tm_lim = INT_MAX;
+  lkcp->nruns = 1;
+  lkcp->kick_type = CC_LK_WALK_KICK;
+  lkcp->nkicks = 0;
+  return;
+}
 
-struct tsp_cp *compass_tsp_init_cp(void)
-{ struct tsp_cp *tspcp;
-  tspcp = xmalloc(sizeof(struct tsp_cp));
-  tspcp->msg_lev = COMPASS_MSG_OFF;
+void compass_tsp_init_cp(struct tsp_cp *tspcp)
+{ tspcp->msg_lev = COMPASS_MSG_OFF;
   tspcp->tm_start = xtime();
   tspcp->tm_lim = INT_MAX;
   tspcp->exact = 0;
   tspcp->nruns = 1;
   tspcp->start_tour = TSP_RANDOM_TOUR;
   tspcp->local_search = TSP_LINKERN_LS;
-  tspcp->neighcp = compass_neigh_init_cp();
-  tspcp->lkcp = tsp_init_linkern_cp();
-  return tspcp;
+  tspcp->neighcp = xmalloc(sizeof(struct neigh_cp));
+  compass_neigh_init_cp(tspcp->neighcp);
+  tspcp->lkcp = xmalloc(sizeof(struct tsp_lkcp));
+  tsp_init_linkern_cp(tspcp->lkcp);
+  return;
 }
 
 void compass_tsp_delete_cp(struct tsp_cp* tspcp)
 { xfree(tspcp->neighcp);
   xfree(tspcp->lkcp);
   xfree(tspcp);
-}
-
-
-static struct tsp_lkcp *tsp_init_linkern_cp(void)
-{ struct tsp_lkcp *lkcp;
-  lkcp = xmalloc(sizeof(struct tsp_lkcp));
-  lkcp->tm_start = xtime();
-  lkcp->tm_lim = INT_MAX;
-  lkcp->nruns = 1;
-  lkcp->kick_type = CC_LK_WALK_KICK;
-  lkcp->nkicks = 0;
-  return lkcp;
 }

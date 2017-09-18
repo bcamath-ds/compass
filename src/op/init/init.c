@@ -25,8 +25,8 @@ int compass_op_start_cycle ( compass_prob *opprob, struct op_solution *opsol,
     int *selected, struct tsp_cp *tspcp)
 /*****************************************************************************/
 { int ret = 0;
-  compass_prob *tspprob;
-  tspprob = compass_init_prob();
+  compass_prob *tspprob = xmalloc(sizeof(compass_prob));
+  compass_init_prob(tspprob);
   compass_sub_prob ( opprob, tspprob, selected);
   compass_tsp_init_prob(tspprob);
   compass_data_k_nearest (tspprob, tspcp->neighcp );

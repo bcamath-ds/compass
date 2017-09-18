@@ -141,12 +141,10 @@ static int call_delaunay (compass_prob *prob, struct neigh_cp *neighcp)
   return 0;
 }
 
-struct neigh_cp *compass_neigh_init_cp( void )
-{ struct neigh_cp *neighcp;
-  neighcp = xmalloc(sizeof(struct neigh_cp));
-  neighcp->msg_lev = COMPASS_MSG_ON;
+void compass_neigh_init_cp(struct neigh_cp *neighcp )
+{ neighcp->msg_lev = COMPASS_MSG_ON;
   neighcp->tm_start = xtime();
   neighcp->neigh_graph = NEIGH_NEAREST;
   neighcp->k = 10;
-  return neighcp;
+  return;
 }

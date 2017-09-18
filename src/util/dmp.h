@@ -17,7 +17,6 @@
 *  along with Compass. If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-
 #ifndef DMP_H
 #define DMP_H
 
@@ -25,12 +24,45 @@
 
 typedef struct DMP DMP;
 
+struct DMP
+{     /* dynamic memory pool */
+      void *avail[32];
+      /* avail[k], 0 <= k <= 31, is a pointer to first available (free)
+       * atom of (k+1)*8 bytes long; at the beginning of each free atom
+       * there is a pointer to another free atom of the same size */
+      void *block;
+      /* pointer to most recently allocated memory block; at the
+       * beginning of each allocated memory block there is a pointer to
+       * previously allocated memory block */
+      int used;
+      /* number of bytes used in most recently allocated memory block */
+      size_t count;
+      /* number of atoms which are currently in use */
+};
+
+#define DMP_BLK_SIZE 8000
+/* size of memory blocks, in bytes, allocated for memory pools */
+
+struct prefix
+{     /* atom prefix (for debugging only) */
+      DMP *pool;
+      /* dynamic memory pool */
+      int size;
+      /* original atom size, in bytes */
+};
+
+#define prefix_size ((sizeof(struct prefix) + 7) & ~7)
+/* size of atom prefix rounded up to multiple of 8 bytes */
+
+int dmp_debug;
+/* debug mode flag */
+
 //#define dmp_debug _compass_dmp_debug
 extern int dmp_debug;
 /* debug mode flag */
 
 //#define dmp_create_pool _compass_dmp_create_pool
-DMP *dmp_create_pool(void);
+void dmp_create_pool(DMP *pool);
 /* create dynamic memory pool */
 
 #define dmp_talloc(pool, type) \
