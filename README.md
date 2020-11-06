@@ -1,7 +1,9 @@
+# This repository has been archieved. Please see [op-solver](https://github.com/gkobeaga/op-solver).
+
 Compass
 =======
 
-Overview
+About
 -------
 
 Compass is a solver for the Orienteering Problem written in C.
